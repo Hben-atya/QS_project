@@ -14,7 +14,7 @@ from torch.utils.serialization import load_lua
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
-import prediction_network
+import QS_network
 import util
 import numpy as np
 
@@ -94,21 +94,20 @@ def create_net(args):
     # creates the model
 	net_single = prediction_network.net(args.features, args.use_dropout).cuda();
 	
-	if (args.continue_from_parameter != None):
+	if args.continue_from_parameter is not None:
 		print('Loading existing parameter file!')
 		config = torch.load(args.continue_from_parameter)
 		net_single.load_state_dict(config['state_dict'])
 
 	if (args.n_GPU > 1) :
 		device_ids=range(0, args.n_GPU)
-        # seperates input to several GPU's
+        # separates input to several GPU's
 		net = torch.nn.DataParallel(net_single, device_ids=device_ids).cuda()
 	else:
 		net = net_single
 
 	net.train()
-	return net;
-#enddef
+	return net
 
 def train_cur_data(cur_epoch, datapart, moving_file, target_file, parameter, output_name, net, criterion, optimizer, registration_spec, args):
 	old_experiments = False
