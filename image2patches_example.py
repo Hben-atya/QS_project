@@ -23,16 +23,16 @@ from monai.transforms import (
 
 
 
-import tarfile
-
-if fname.endswith("tar.gz"):
-    tar = tarfile.open(fname, "r:gz")
-    tar.extractall()
-    tar.close()
-elif fname.endswith("tar"):
-    tar = tarfile.open(fname, "r:")
-    tar.extractall()
-    tar.close()
+# import tarfile
+#
+# if fname.endswith("tar.gz"):
+#     tar = tarfile.open(fname, "r:gz")
+#     tar.extractall()
+#     tar.close()
+# elif fname.endswith("tar"):
+#     tar = tarfile.open(fname, "r:")
+#     tar.extractall()
+#     tar.close()
 
 
 # SetUp data directory:
@@ -71,7 +71,9 @@ target_appear_trainset = conv2tensor(target_appear_trainset)
 dataset_size = moving_appear_trainset.shape
 # output: starting indices for patches in flattened image concattenated all images.
 # input: batch,3D patch, XYZ size of image, equal stride at each direction
-flat_idx = calculatePatchIdx3D(dataset_size[0], patch_size * torch.ones(3), dataset_size[1:],stride * torch.ones(3))
+flat_idx = calculatePatchIdx3D(dataset_size[0],
+                               patch_size * torch.ones(3), dataset_size[1:],
+                               stride * torch.ones(3))
 # flat_idx = calculatePatchIdx3D(batch_size, patch_size * torch.ones(3), dataset_size, stride * torch.ones(3))
 flat_idx_select = torch.zeros(flat_idx.size())
 

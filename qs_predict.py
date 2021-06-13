@@ -1,6 +1,6 @@
 # add LDDMM shooting code into path
 import sys
-sys.path.append('../vectormomentum/Code/Python');
+sys.path.append('../vectormomentum/Code/Python')
 sys.path.append('../library')
 
 from subprocess import call
@@ -29,9 +29,13 @@ import math
 import registration_methods
 
 def predict_parameters():
-    predict_param = dict(moving_list=None, target_list=None, output_list = len(moving_list)*['/tcmldrive/hadar/quicksilver/pred_results'], 
-    batch_size=64, n_GPU=1, use_correction=True, use_CPU_for_shooting = False,shoot_steps=0,affine_align=True, histeq=False, atlas=../data/atlas/icbm152.nii,
-    prediction_saved_model = '../../network_configs/OASIS_predict.pt.tar', correction_saved_model = '../../network_configs/OASIS_correct.pt.tar')
+    predict_param = dict(moving_list=None,
+                         target_list=None,
+                         output_list = len(moving_list)*['/tcmldrive/hadar/quicksilver/pred_results'],
+                         batch_size=64, n_GPU=1, use_correction=True, use_CPU_for_shooting = False,
+                         shoot_steps=0,affine_align=True, histeq=False, atlas=../data/atlas/icbm152.nii,
+                    prediction_saved_model = '../../network_configs/OASIS_predict.pt.tar',
+                                             correction_saved_model = '../../network_configs/OASIS_correct.pt.tar')
     
     # moving_list/target_list - list of moving/target images files
     # output_list - create a folder for output for each registration
@@ -90,7 +94,7 @@ def create_net(predict_param, network_config):
         net = net_single
     
     net.train()
-    return net;
+    return net
 #enddef
 
 
@@ -126,7 +130,7 @@ def predict_image(predict_param):
 
     # load the prediction network with state dict- predict_network_config
     predict_network_config = torch.load(predict_param['prediction_saved_model'])
-    prediction_net = create_net(predict_param, predict_network_config);
+    prediction_net = create_net(predict_param, predict_network_config)
 
     batch_size = predict_param['batch_size']
     patch_size = predict_network_config['patch_size']
@@ -136,10 +140,10 @@ def predict_image(predict_param):
     # use correction network if required
     if predict_param['use_correction']:
         #  state dict- correction_network_config
-        correction_network_config = torch.load(predict_param['correction_saved_model']);
-        correction_net = create_net(predict_param, correction_network_config);
+        correction_network_config = torch.load(predict_param['correction_saved_model'])
+        correction_net = create_net(predict_param, correction_network_config)
     else:
-        correction_net = None;
+        correction_net = None
 
     # start prediction
     for i in range(0, len(predict_param['moving_list'])):
@@ -167,8 +171,8 @@ def predict_image(predict_param):
             target_image = common.LoadITKImage(predict_param['target_image'][i], mType)
 
         #preprocessing of the image
-        moving_image_np = preprocess_image(moving_image, predict_param['histeq']);
-        target_image_np = preprocess_image(target_image, predict_param['histeq']);
+        moving_image_np = preprocess_image(moving_image, predict_param['histeq'])
+        target_image_np = preprocess_image(target_image, predict_param['histeq'])
 
         grid = moving_image.grid()
         #moving_image = ca.Image3D(grid, mType)
@@ -188,7 +192,7 @@ def predict_image(predict_param):
         # this is the predicted momentum of the network
         m0 = prediction_result['image_space']
         #convert to registration space and perform registration
-        m0_reg = common.FieldFromNPArr(m0, mType);
+        m0_reg = common.FieldFromNPArr(m0, mType)
 
         #perform correction
         if (predict_param['use_correction']):
@@ -200,14 +204,14 @@ def predict_image(predict_param):
                 # correct_transform_space = True
             correction_result = util.predict_momentum(moving_image_np, target_inv_np, input_batch, batch_size, patch_size, correction_net, correct_transform_space);
             m0_correct = correction_result['image_space']
-            m0 += m0_correct;
-            m0_reg = common.FieldFromNPArr(m0, mType);
+            m0 += m0_correct
+            m0_reg = common.FieldFromNPArr(m0, mType)
 
         registration_result = registration_methods.geodesic_shooting(moving_image, target_image, m0_reg,predict_param['shoot_steps'], mType, predict_network_config)
 
         #endif
 
-        write_result(registration_result, predict_param['output_list'][i]);
+        write_result(registration_result, predict_param['output_list'][i])
 #enddef
 
 
