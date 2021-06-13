@@ -3,6 +3,7 @@ channels:
     - defaults
     - conda-forge
 dependencies:
+  - cmake
   - python=3.7
   - ipython>=7.9
   - jupyterlab
