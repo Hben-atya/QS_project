@@ -17,9 +17,8 @@ import torch.datasets
 
 
 def affine_hist_cf():
-    affine_hist_param = dict(input_image_folder=None, output_image_list=None, histeq=False, atlas='../data/atlas/icbm152.nii',
-    input_labels=None,output_labels=None,
-    prediction_saved_model = '../../network_configs/OASIS_predict.pt.tar', correction_saved_model = '../../network_configs/OASIS_correct.pt.tar')
+    affine_hist_param = dict(input_image_folder="/MLdata/MRIcourse/Data \Bases/supervised_registration/CUMC_examples", output_image_list=None, histeq=False, atlas="MLdata/MRIcourse/Data \Bases/supervised_registration/atlas/icbm152.nii",
+    input_labels=None,output_labels=None)
     
     # output images - List of output image directory and file names, seperated by space. Do not save as .nii format as PyCA will flip the image. The recommended format to save images is .mhd
     # output_list - create a folder for output for each registration
@@ -46,7 +45,7 @@ def check_args(affine_hist_param):
         print('The number of input labels is not consistent with the number of output labels!')
 
 def affine_transformation(affine_hist_param,dl):
-    for image,label dl:
+    for image,label in dl:
         call(["reg_aladin",
             "-noSym", "-speeeeed", "-ref", affine_hist_param['atlas'] ,
             "-flo",image,
